@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <chrono>
@@ -25,6 +26,13 @@ void elemwise_mul(double *arr1, double *arr2, double *arr3, int size)
     }
 }
 
+
+void write_time_to_file(double time){
+    std::ofstream outfile;
+    outfile.open("nanoseconds.txt", std::ios_base::app);
+    outfile << time << std::endl;
+}
+
 void test_mul(int arr_size)
 {
     double *arr1 = new double[arr_size];
@@ -32,6 +40,7 @@ void test_mul(int arr_size)
     double *arr3 = new double[arr_size];
 
     double t1 = funcTime(elemwise_mul, arr1, arr2, arr3, arr_size);
+    write_time_to_file(t1);
     std::cout << "Time taken for " << arr_size << " elements: " << t1 << " nanoseconds" << std::endl;
 }
 

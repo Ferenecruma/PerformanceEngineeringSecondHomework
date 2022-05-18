@@ -11,11 +11,13 @@ ARRAY_SIZES = [1000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000]
 def timeit(func):
     @wraps(func)
     def timeit_wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
+        start_time = time.perf_counter_ns()
         result = func(*args, **kwargs)
-        end_time = time.perf_counter()
+        end_time = time.perf_counter_ns()
         total_time = end_time - start_time
-        print(f'Function {func.__name__} Took {total_time:.4f} seconds \n')
+        print(f'Function {func.__name__} Took {total_time} nanoseconds \n')
+        with open("nanoseconds.txt", "a") as f:
+            f.write(f'{total_time} \n')
         return result
     return timeit_wrapper
 
