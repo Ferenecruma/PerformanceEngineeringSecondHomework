@@ -1,24 +1,43 @@
+from functools import wraps
+import time
 import random
 
-from timebudget import timebudget
 import numpy as np
 
-ARRAY_SIZE = 10000000
-DOUBLE_ARRAY_1 = [random.random() for _ in range(ARRAY_SIZE)]
-DOUBLE_ARRAY_2 = [random.random() for _ in range(ARRAY_SIZE)]
 
-@timebudget
+ARRAY_SIZES = [1000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000]
+
+
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print(f'Function {func.__name__} Took {total_time:.4f} seconds \n')
+        return result
+    return timeit_wrapper
+
+
+def create_random_lists(list_size: int) -> tuple[list, list]:
+    return [random.random() for _ in range(list_size)], [random.random() for _ in range(list_size)]
+
+@timeit
 def elemwise_python(list_1: list[float], list_2: list[float]):
     return [e1 * e2 for e1, e2 in zip(list_1, list_2)]
 
-@timebudget
+@timeit
 def elemwise_numpy(array_1: np.ndarray, array_2: np.ndarray):
     return array_1 * array_2
 
 
 def main():
-    elemwise_numpy(np.array(DOUBLE_ARRAY_1), np.array(DOUBLE_ARRAY_2))
-    elemwise_python(DOUBLE_ARRAY_1, DOUBLE_ARRAY_2)
+    for size in ARRAY_SIZES:
+        print(f'\n\nArray size: {size} \n')
+        list_1, list_2 = create_random_lists(size)
+        elemwise_python(list_1, list_2)
+        elemwise_numpy(np.array(list_1), np.array(list_2))
 
 if __name__ == "__main__":
     main()
